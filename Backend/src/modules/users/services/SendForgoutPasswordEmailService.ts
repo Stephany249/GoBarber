@@ -1,34 +1,43 @@
 import { injectable, inject } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
+import IMailProvider from '@shared/container/providers/MailProvider/models/IMailProvider';
 import IUsersRepository from '../repositories/IUsersRepositoriy';
+import IUserTokensRepository from '../repositories/IUserTokensRepository';
 
-import User from '../infra/typeorm/entities/User';
+// import User from '../infra/typeorm/entities/User';
 
 interface IRequest {
   email: string;
 }
 
-// @injectable()
-// class SendForgoutPasswordEmailService {
-//   constructor(
-//     @inject('UsersRepository')
-//     private usersRepository: IUsersRepository,
-//   ) {}
+@injectable()
+class SendForgoutPasswordEmailService {
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
 
-//   public async execute({ email }: IRequest): Promise<User> {
-//     const checkUserExists = await this.usersRepository.findByEmail(email);
+    @inject('MailProvider')
+    private mailProvider: IMailProvider,
 
-//     if (checkUserExists) {
-//       throw new AppError('Email address already used.');
-//     }
+    @inject('UsersTokensRepository')
+    private userTokensRepository: IUserTokensRepository,
+  ) {}
 
-//     const user = await this.usersRepository.create({
-//       email,
-//     });
+  public async execute({ email }: IRequest): Promise<void> {
+    const user = await this.usersRepository.findByEmail(email);
 
-//     return user;
-//   }
-// }
+    if (!user) {
+      throw new AppError('User does not exists.');
+    }
 
-// export default SendForgoutPasswordEmailService;
+    await this.userTokensRepository.generate(user.id);
+
+    this.mailProvider.sendMail(
+      email,
+      'Pedido de recuperação de senha recebido.',
+    );
+  }
+}
+
+export default SendForgoutPasswordEmailService;

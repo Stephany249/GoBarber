@@ -41,7 +41,7 @@
 
 **RNF**
 
-- Os agendamentos do prestador no dia devem ser armazenados em cache;
+- Os agendamentos do prestador no dia devem ser armazenados em ;
 - As notificações do prestador devem ser armazenadas no MongoDB;
 - As notificações do prestador devem ser enviadas em tempo-real utilizando Socket.io;
 
@@ -60,7 +60,7 @@
 
 **RNF**
 
-- A lista de prestadores deve ser armazenada em cache;
+- A lista de prestadores deve ser armazenada em ;
 
 **RN**
 

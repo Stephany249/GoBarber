@@ -2,7 +2,6 @@ import React, { useCallback, useRef } from 'react';
 import {
   Image,
   View,
-  ScrollView,
   KeyboardAvoidingView,
   Platform,
   TextInput,
@@ -24,6 +23,7 @@ import Button from '../../components/Button';
 import logoImg from '../../assets/logo.png';
 
 import {
+  Content,
   Container,
   Title,
   ForgotPassword,
@@ -88,10 +88,7 @@ const SignIn: React.FC = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         enabled
       >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ flex: 1 }}
-        >
+        <Content>
           <Container>
             <Image source={logoImg} />
             <View>
@@ -140,7 +137,7 @@ const SignIn: React.FC = () => {
               <ForgotPasswordText>Esqueci minha senha</ForgotPasswordText>
             </ForgotPassword>
           </Container>
-        </ScrollView>
+        </Content>
       </KeyboardAvoidingView>
 
       <CreateAccountButton onPress={() => navigation.navigate('SignUp')}>

@@ -10,7 +10,7 @@ import UserAvatarController from '../controllers/UserAvatarController';
 
 const usersRouter = Router();
 const usersController = new UsersController();
-const userAvatarCOntroller = new UserAvatarController();
+const userAvatarController = new UserAvatarController();
 const upload = multer(uploadConfig);
 
 usersRouter.post(
@@ -29,7 +29,7 @@ usersRouter.patch(
   '/avatar',
   ensureAuthenticated,
   upload.single('avatar'),
-  userAvatarCOntroller.update,
+  userAvatarController.update,
 );
 
 export default usersRouter;

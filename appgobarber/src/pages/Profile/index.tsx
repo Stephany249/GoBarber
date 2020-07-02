@@ -12,6 +12,7 @@ import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 import Icon from 'react-native-vector-icons/Feather';
+import ImagePicker from 'react-native-image-picker';
 import { useAuth } from '../../hooks/auth';
 
 import api from '../../services/api';
@@ -38,7 +39,7 @@ interface ProfileFormData {
 }
 
 const Profile: React.FC = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, signOut } = useAuth();
   const formRef = useRef<FormHandles>(null);
   const navigation = useNavigation();
 
@@ -96,7 +97,7 @@ const Profile: React.FC = () => {
             : {}),
         };
 
-        const response = await api.post('/profile', formData);
+        const response = await api.put('/profile', formData);
 
         updateUser(response.data);
 
@@ -106,8 +107,6 @@ const Profile: React.FC = () => {
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationError(err);
-
-          console.log(err);
 
           formRef.current?.setErrors(errors);
 
@@ -127,6 +126,39 @@ const Profile: React.FC = () => {
     navigation.goBack();
   }, [navigation]);
 
+  const handleUpdateAvatar = useCallback(() => {
+    ImagePicker.showImagePicker(
+      {
+        title: 'Selecione uma imagem de perfil',
+        cancelButtonTitle: 'Cancelar',
+        takePhotoButtonTitle: 'User câmera',
+        chooseFromLibraryButtonTitle: 'Escolher da galeria',
+      },
+      (response) => {
+        if (response.didCancel) {
+          return;
+        }
+
+        if (response.error) {
+          Alert.alert('Erro ao atualizar sua foto de perfil');
+          return;
+        }
+
+        const data = new FormData();
+
+        data.append('avatar', {
+          type: 'image/jpeg',
+          name: `${user.id}.jpg`,
+          uri: response.uri,
+        });
+
+        api.patch('/users/avatar', data).then((apiResponse) => {
+          updateUser(apiResponse.data);
+        });
+      },
+    );
+  }, [user.id, updateUser]);
+
   return (
     <>
       <KeyboardAvoidingView
@@ -139,7 +171,7 @@ const Profile: React.FC = () => {
             <BackButton onPress={handleGoBack}>
               <Icon name="chevron-left" size={24} color="#999195" />
             </BackButton>
-            <UserAvatarButton>
+            <UserAvatarButton onPress={handleUpdateAvatar}>
               <UserAvatar
                 source={{
                   uri:
@@ -221,6 +253,8 @@ const Profile: React.FC = () => {
               >
                 Confirmar mudanças
               </Button>
+
+              <Button onPress={() => signOut()}>Sair</Button>
             </Form>
           </Container>
         </Content>

@@ -80,7 +80,7 @@ export const AvatarInput = styled.div`
     right: 0;
     bottom: 0;
     border: 0;
-    cursor: pointer
+    cursor: pointer;
     transition: backgroud-color 0.2s;
 
     display: flex;
